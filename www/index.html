@@ -15,6 +15,32 @@
           .catch(err => console.log('Error', err));
       }
     </script>-->
+    <!-- Firebase App is always required and must be first -->
+    <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase-app.js"></script>
+
+    <!-- Add additional services that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase-messaging.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase-functions.js"></script>
+
+    <!-- Comment out (or don't include) services that you don't want to use -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase-storage.js"></script> -->
+
+    <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyDZEpXPyu0TucgR8TQkH2_UjkIDEvbhG0k",
+        authDomain: "todo-app-1db04.firebaseapp.com",
+        databaseURL: "https://todo-app-1db04.firebaseio.com",
+        projectId: "todo-app-1db04",
+        storageBucket: "todo-app-1db04.appspot.com",
+        messagingSenderId: "782355012216"
+      };
+      firebase.initializeApp(config);
+    </script>
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
@@ -54,10 +80,16 @@
       <ion-content>
         <!-- our list and list items -->
         <ion-list>
-          <ion-item ng-repeat="task in tasks">
-            {{task.title}}
+          <ion-item ng-repeat="task in tasks" ng-if="tasks.length > 0">
+            <span class="title-text">{{task.title}}</span>
+            <button class="button-icon delete-button" ng-click="deleteTask(task)">
+              <i class="icon ion-trash-b"></i>
+            </button>
           </ion-item>
         </ion-list>
+        <div class="text-center padding-vertical" ng-if="tasks.length == 0">
+          <h1>No items today</h1>
+        </div>
       </ion-content>
     <!-- </ion-side-menu> -->
     <script id="new-task.html" type="text/ng-template">

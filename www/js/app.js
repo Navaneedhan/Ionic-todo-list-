@@ -27,7 +27,30 @@ angular.module('todo', ['ionic'])
 
 .controller('TodoCtrl', function($scope, $ionicModal) {
   $scope.tasks = [];
+  $scope.getTasksFromFirestore = function() {
+    var db = firebase.firestore();
+    db.collection('tasks').onSnapshot(function(query) {
+      query.docChanges().forEach(function(change) {
+        if (change.type === 'added') {
+          $scope.$apply(function() {
+            $scope.tasks.push(Object.assign({}, change.doc.data(), { id: change.doc.id }));
+          });
+        } else if (change.type === 'modified') {
+          $scope.$apply(function() {
+            $scope.tasks.push(Object.assign({}, change.doc.data(), { id: change.doc.id }));
+          });
+        } else if (change.type === 'removed') {
+          var index = $scope.tasks.map(function(task) { return  task.title; }).indexOf(change.doc.data().title);
+          $scope.$apply(function() {
+            $scope.tasks.splice(index, 1);
+          });
+        }
+      })
+    });
+  };
 
+  $scope.getTasksFromFirestore();
+  console.log($scope.tasks);
   $ionicModal.fromTemplateUrl('new-task.html', function(modal) {
     $scope.taskModal = modal;
   }, {
@@ -44,10 +67,20 @@ angular.module('todo', ['ionic'])
   };
 
   $scope.createTask = function(task) {
-    $scope.tasks.push(
-      { title: task.title }
-    );
+    var db = firebase.firestore();
+    db.collection('tasks').add({
+      title: task.title
+    }).then(function() {
+      console.log('Task added successfully');
+    }).catch(function(err) {
+      console.log(err);
+    });
     $scope.taskModal.hide();
     task.title = '';
   };
+
+  $scope.deleteTask = function(task) {
+    var db = firebase.firestore();
+    db.collection('tasks').doc(task.id).delete();
+  }
 });
